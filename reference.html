@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>fitgrid &mdash; fitgrid 0.1 documentation</title>
+  <title>Reference &mdash; fitgrid 0.1 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Research context" href="research_context.html" /> 
+    <link rel="prev" title="Tutorial" href="tutorial.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -47,7 +47,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> fitgrid
+            <a href="index.html" class="icon icon-home"> fitgrid
           
 
           
@@ -77,10 +77,10 @@
               
             
             
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="research_context.html">Research context</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a></li>
 </ul>
 
             
@@ -95,7 +95,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">fitgrid</a>
+          <a href="index.html">fitgrid</a>
         
       </nav>
 
@@ -124,9 +124,9 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="#">Docs</a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li><cite>fitgrid</cite></li>
+      <li>Reference</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -143,35 +143,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="fitgrid">
-<h1><cite>fitgrid</cite><a class="headerlink" href="#fitgrid" title="Permalink to this headline">¶</a></h1>
-<p><cite>fitgrid</cite> is a Python library for running linear models on stacks of epochs.</p>
-<p>Here’s a quick demo:</p>
-<ol class="arabic">
-<li><p class="first">Import <cite>fitgrid</cite> and read an epochs table from an HDF5 file:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitgrid</span>
-<span class="n">epochs</span> <span class="o">=</span> <span class="n">fitgrid</span><span class="o">.</span><span class="n">epochs_from_hdf</span><span class="p">(</span><span class="s1">&#39;epochs_table.h5&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</li>
-<li><p class="first">Run a regression model, which creates a <code class="docutils literal notranslate"><span class="pre">FitGrid</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">lm</span><span class="p">(</span><span class="n">RHS</span><span class="o">=</span><span class="s1">&#39;stimulus_magnitude + stimulus_type&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</li>
-<li><p class="first">Now all diagnostic and fit information is available as attributes. For
-example, the betas:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">betas</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">params</span>
-</pre></div>
-</div>
-<p>or adjusted <span class="math notranslate nohighlight">\(R^2\)</span>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rsquared_adj</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">rsquared_adj</span>
-</pre></div>
-</div>
-</li>
-</ol>
-<div class="toctree-wrapper compound">
-</div>
+  <div class="section" id="reference">
+<h1>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h1>
 </div>
 
 
@@ -182,8 +155,8 @@ example, the betas:</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="research_context.html" class="btn btn-neutral float-right" title="Research context" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
+        <a href="tutorial.html" class="btn btn-neutral" title="Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

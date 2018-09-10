@@ -1,0 +1,350 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorial &mdash; fitgrid 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Reference" href="reference.html" />
+    <link rel="prev" title="Research context" href="research_context.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> fitgrid
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="research_context.html">Research context</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setup">0. Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#read-in-epochs">1. Read in epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-a-model">2. Run a model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examine-results">3. Examine results</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">fitgrid</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Tutorial</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<p>The <cite>fitgrid</cite> workflow consists of 3 steps:</p>
+<ol class="arabic simple" start="0">
+<li><code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">fitgrid</span></code> and set defaults.</li>
+<li>Read in an epochs table, which creates <code class="docutils literal notranslate"><span class="pre">Epochs</span></code>.</li>
+<li>Run a model using the <code class="docutils literal notranslate"><span class="pre">Epochs</span></code>, which creates a <code class="docutils literal notranslate"><span class="pre">FitGrid</span></code>.</li>
+<li>Examine fit or diagnostic information using the <code class="docutils literal notranslate"><span class="pre">FitGrid</span></code>.</li>
+</ol>
+<p>Here are the steps in detail:</p>
+<div class="section" id="setup">
+<h2>0. Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<p>In your preferred Python environment (we recommend Jupyter Notebook or
+JupyterLab), run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitgrid</span>
+</pre></div>
+</div>
+<p>Now you need to set three library-wide constants that help <cite>fitgrid</cite> properly
+ingest your epochs table:</p>
+<ol class="arabic simple">
+<li><code class="docutils literal notranslate"><span class="pre">EPOCH_ID</span></code>, the name of the <strong>epoch</strong> identifier column.</li>
+<li><code class="docutils literal notranslate"><span class="pre">TIME</span></code>, the name of the <strong>time</strong> identifier column.</li>
+<li><code class="docutils literal notranslate"><span class="pre">CHANNELS</span></code>, a list of channel columns of interest.</li>
+</ol>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fitgrid</span><span class="o">.</span><span class="n">EPOCH_ID</span> <span class="o">=</span> <span class="s1">&#39;epoch_id&#39;</span>
+<span class="n">fitgrid</span><span class="o">.</span><span class="n">TIME</span> <span class="o">=</span> <span class="s1">&#39;time&#39;</span>
+<span class="n">fitgrid</span><span class="o">.</span><span class="n">CHANNELS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;channel0&#39;</span><span class="p">,</span> <span class="s1">&#39;channel1&#39;</span><span class="p">,</span> <span class="s1">&#39;channel2&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>These constants have the following defaults specific to Kutas Lab:</p>
+<span class="target" id="module-fitgrid"></span><dl class="data">
+<dt id="fitgrid.CHANNELS">
+<code class="descclassname">fitgrid.</code><code class="descname">CHANNELS</code><em class="property"> = ['lle', 'lhz', 'MiPf', 'LLPf', 'RLPf', 'LMPf', 'RMPf', 'LDFr', 'RDFr', 'LLFr', 'RLFr', 'LMFr', 'RMFr', 'LMCe', 'RMCe', 'MiCe', 'MiPa', 'LDCe', 'RDCe', 'LDPa', 'RDPa', 'LMOc', 'RMOc', 'LLTe', 'RLTe', 'LLOc', 'RLOc', 'MiOc', 'A2', 'HEOG', 'rle', 'rhz']</em><a class="headerlink" href="#fitgrid.CHANNELS" title="Permalink to this definition">¶</a></dt>
+<dd><p>default channel list</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="fitgrid.EPOCH_ID">
+<code class="descclassname">fitgrid.</code><code class="descname">EPOCH_ID</code><em class="property"> = 'Epoch_idx'</em><a class="headerlink" href="#fitgrid.EPOCH_ID" title="Permalink to this definition">¶</a></dt>
+<dd><p>default epoch identifier</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="fitgrid.TIME">
+<code class="descclassname">fitgrid.</code><code class="descname">TIME</code><em class="property"> = 'Time'</em><a class="headerlink" href="#fitgrid.TIME" title="Permalink to this definition">¶</a></dt>
+<dd><p>default time identifier</p>
+</dd></dl>
+
+<p class="last">In particular, if your epochs table was generated by <cite>mkpy</cite>, you shouldn’t
+need to change <code class="docutils literal notranslate"><span class="pre">EPOCH_ID</span></code> or <code class="docutils literal notranslate"><span class="pre">TIME</span></code>.</p>
+</div>
+</div>
+<div class="section" id="read-in-epochs">
+<h2>1. Read in epochs<a class="headerlink" href="#read-in-epochs" title="Permalink to this headline">¶</a></h2>
+<p>Epochs tables can come from pandas DataFrames:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epochs</span> <span class="o">=</span> <span class="n">fitgrid</span><span class="o">.</span><span class="n">epochs_from_dataframe</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or HDF5 files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epochs</span> <span class="o">=</span> <span class="n">fitgrid</span><span class="o">.</span><span class="n">epochs_from_hdf</span><span class="p">(</span><span class="s1">&#39;epochs_table.h5&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Input epochs tables are required to have at least two columns in the index:</p>
+<ol class="arabic simple">
+<li>epoch identifier (assumed to be given by <code class="docutils literal notranslate"><span class="pre">EPOCH_ID</span></code>)</li>
+<li>time identifier (assumed to be given by <code class="docutils literal notranslate"><span class="pre">TIME</span></code>)</li>
+</ol>
+<p>In addition, it is assumed that each epoch has the same <code class="docutils literal notranslate"><span class="pre">TIME</span></code> indices, and
+thus for each timepoint we have measurements from the same epochs.</p>
+</div>
+<div class="section" id="run-a-model">
+<h2>2. Run a model<a class="headerlink" href="#run-a-model" title="Permalink to this headline">¶</a></h2>
+<p>As of now, only linear regression is available. To run linear regression on the
+epochs, use the <code class="code docutils literal notranslate"><span class="pre">lm</span></code> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">lm</span><span class="p">(</span><span class="n">RHS</span><span class="o">=</span><span class="s1">&#39;continuous + categorical&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="code docutils literal notranslate"><span class="pre">epochs.lm</span></code> runs linear regression for each channel, with the channel
+data as the left hand side, and the right hand side given by the Patsy/R style
+formula passed in using the <code class="code docutils literal notranslate"><span class="pre">RHS</span></code> parameter.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><cite>FitGrid</cite> assumes that the epochs table contains the channels given by
+CHANNELS and throws an error if it doesn’t. If you haven’t set CHANNELS or
+want to run the model on a specific set of channels, you need pass the
+<code class="docutils literal notranslate"><span class="pre">LHS</span></code> parameter:</p>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">lm</span><span class="p">(</span>
+    <span class="n">LHS</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;channel0&#39;</span><span class="p">,</span> <span class="s1">&#39;channel1&#39;</span><span class="p">],</span>
+    <span class="n">RHS</span><span class="o">=</span><span class="s1">&#39;continuous + categorical&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Running a model on the epochs creates a <cite>FitGrid</cite> object, containing fit
+information, such as the betas, and diagnostic information,
+such as <span class="math notranslate nohighlight">\(R^2\)</span>.</p>
+</div>
+<div class="section" id="examine-results">
+<h2>3. Examine results<a class="headerlink" href="#examine-results" title="Permalink to this headline">¶</a></h2>
+<p>Now <code class="docutils literal notranslate"><span class="pre">grid</span></code>, a <code class="docutils literal notranslate"><span class="pre">FitGrid</span></code> object, can be queried for attributes just like a
+<code class="docutils literal notranslate"><span class="pre">fit</span></code> object from <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code> (see <a class="reference internal" href="research_context.html"><span class="doc">Research context</span></a> for more
+background), for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">betas</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">params</span>
+<span class="n">rsquared_adj</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">rsquared_adj</span>
+
+<span class="n">influence</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">get_influence</span><span class="p">()</span>
+<span class="n">cooks_distance</span> <span class="o">=</span> <span class="n">influence</span><span class="o">.</span><span class="n">cooks_distance</span>
+</pre></div>
+</div>
+<p>If you are using an interactive environment like Jupyter Notebook or IPython,
+you can use tab completion to see what attributes are available:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># type &#39;grid.&#39; and press Tab</span>
+<span class="n">grid</span><span class="o">.&lt;</span><span class="n">TAB</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Calling an attribute of <code class="docutils literal notranslate"><span class="pre">grid</span></code> returns either a pandas DataFrame of the
+appropriate shape or another <code class="docutils literal notranslate"><span class="pre">FitGrid</span></code> object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># this is a dataframe</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">params</span>
+
+<span class="c1"># this is a FitGrid</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">get_influence</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If a dataframe is returned, it is always presented in long form with the same
+indices and columns on the outer side as a single epoch: channels as columns
+and time as indices.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="reference.html" class="btn btn-neutral float-right" title="Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="research_context.html" class="btn btn-neutral" title="Research context" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  false,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
