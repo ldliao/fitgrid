@@ -281,6 +281,24 @@ appropriate shape or another <code class="docutils literal notranslate"><span cl
 <p>If a dataframe is returned, it is always presented in long form with the same
 indices and columns on the outer side as a single epoch: channels as columns
 and time as indices.</p>
+<p>In addition, slicing on a <code class="docutils literal notranslate"><span class="pre">grid</span></code> can be performed to produce a smaller grid
+of the shape you want. Suppose you want to only look at a certain channel
+within a given timeframe. You can slice as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">smaller_grid</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="mi">25</span><span class="p">:</span><span class="mi">75</span><span class="p">,</span> <span class="s1">&#39;MiPa&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Or multiple channels:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">smaller_grid</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="mi">25</span><span class="p">:</span><span class="mi">75</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;MiPa&#39;</span><span class="p">,</span> <span class="s1">&#39;MiPf&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>To include all timepoints or all channels, use a colon:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># all channels within certain timeframe</span>
+<span class="n">grid</span><span class="p">[</span><span class="mi">25</span><span class="p">:</span><span class="mi">75</span><span class="p">,</span> <span class="p">:]</span>
+
+<span class="c1"># all timepoints, two channels</span>
+<span class="n">grid</span><span class="p">[:,</span> <span class="p">[</span><span class="s1">&#39;MiPa&#39;</span><span class="p">,</span> <span class="s1">&#39;MiPf&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
 </div>
 </div>
 
