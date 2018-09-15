@@ -80,7 +80,13 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="research_context.html">Research context</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#data-generation">Data generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-ingestion">Data ingestion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#epochs-methods"><code class="docutils literal notranslate"><span class="pre">Epochs</span></code> methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fitgrid-methods"><code class="docutils literal notranslate"><span class="pre">FitGrid</span></code> methods</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -145,6 +151,173 @@
             
   <div class="section" id="reference">
 <h1>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h1>
+<p>This is a list of tools available in <code class="docutils literal notranslate"><span class="pre">fitgrid</span></code>.</p>
+<span class="target" id="module-fitgrid"></span><div class="section" id="data-generation">
+<h2>Data generation<a class="headerlink" href="#data-generation" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">fitgrid</span></code> has a built-in function that generates data and creates <code class="docutils literal notranslate"><span class="pre">Epochs</span></code>:</p>
+<dl class="function">
+<dt id="fitgrid.generate">
+<code class="descclassname">fitgrid.</code><code class="descname">generate</code><span class="sig-paren">(</span><em>n_epochs=10</em>, <em>n_samples=100</em>, <em>n_categories=2</em>, <em>n_channels=32</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return Epochs object with fake EEG data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n_epochs</strong> (<em>int</em>) – number of epochs per category to be generated</li>
+<li><strong>n_samples</strong> (<em>int</em>) – number of samples in a single epochs</li>
+<li><strong>n_categories</strong> (<em>int</em>) – number of levels of the categorical variable</li>
+<li><strong>n_channels</strong> (<em>int</em>) – number of time series representing EEG channels</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>epochs</strong> – Epochs object containing simulated EEG data.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Epochs object</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p><cite>n_epochs</cite> and <cite>n_categories</cite> interact in the sense that <cite>n_epochs</cite> epochs
+are generated for each level of the categorical variable. In other words,
+the true number of epochs in the generated data is equal to <cite>n_epochs</cite> *
+<cite>n_categories</cite>.</p>
+<p>For example, the default <cite>n_epochs = 10</cite> and <cite>n_categories
+= 2</cite> produces 20 epochs, 10 per category.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="data-ingestion">
+<h2>Data ingestion<a class="headerlink" href="#data-ingestion" title="Permalink to this headline">¶</a></h2>
+<p>Functions that read epochs tables and create <code class="docutils literal notranslate"><span class="pre">Epochs</span></code>.</p>
+<dl class="function">
+<dt id="fitgrid.epochs_from_dataframe">
+<code class="descclassname">fitgrid.</code><code class="descname">epochs_from_dataframe</code><span class="sig-paren">(</span><em>dataframe</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct Epochs object from a Pandas DataFrame epochs table.</p>
+<p>The DataFrame should contain columns with names defined by EPOCH_ID and
+TIME as index columns.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dataframe</strong> (<em>pandas DataFrame</em>) – a pandas DataFrame object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>epochs</strong> – an Epochs object with the data</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Epochs</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fitgrid.epochs_from_hdf">
+<code class="descclassname">fitgrid.</code><code class="descname">epochs_from_hdf</code><span class="sig-paren">(</span><em>hdf_filename</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_hdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct Epochs object from an HDF5 file containing an epochs table.</p>
+<p>The HDF5 file should contain columns with names defined by EPOCH_ID and
+TIME either as index columns or as regular columns. This is added as a
+convenience, in general, input epochs tables should contain these columns
+in the index.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hdf_filename</strong> (<em>str</em>) – HDF5 file name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>epochs</strong> – an Epochs object with the data</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Epochs</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="epochs-methods">
+<h2><code class="docutils literal notranslate"><span class="pre">Epochs</span></code> methods<a class="headerlink" href="#epochs-methods" title="Permalink to this headline">¶</a></h2>
+<p>Models and plotting.</p>
+<dl class="function">
+<dt id="fitgrid.epochs.Epochs.lm">
+<code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">lm</code><span class="sig-paren">(</span><em>self</em>, <em>LHS='default'</em>, <em>RHS=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.lm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run ordinary least squares linear regression on the epochs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>LHS</strong> (<em>list of str</em><em>, </em><em>optional</em>) – list of channels for the left hand side of the regression formula</li>
+<li><strong>RHS</strong> (<em>str</em>) – right hand side of the regression formula</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>grid</strong> – FitGrid object containing results of the regression</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">FitGrid</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fitgrid.epochs.Epochs.plot_averages">
+<code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">plot_averages</code><span class="sig-paren">(</span><em>self</em>, <em>channels=None</em>, <em>negative_up=True</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.plot_averages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot grand mean averages for each channel, negative up by default.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>channels</strong> (<em>list of str</em><em>, </em><em>optional</em><em>, </em><em>default CHANNELS</em>) – list of channel names to plot the averages</li>
+<li><strong>negative_up</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default True</em>) – by convention, ERPs are plotted negative voltage up</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="fitgrid-methods">
+<h2><code class="docutils literal notranslate"><span class="pre">FitGrid</span></code> methods<a class="headerlink" href="#fitgrid-methods" title="Permalink to this headline">¶</a></h2>
+<p>Plotting and statistics.</p>
+<dl class="function">
+<dt id="fitgrid.fitgrid.FitGrid.influential_epochs">
+<code class="descclassname">fitgrid.fitgrid.FitGrid.</code><code class="descname">influential_epochs</code><span class="sig-paren">(</span><em>self</em>, <em>top=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.fitgrid.FitGrid.influential_epochs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return dataframe with top influential epochs ranked by Cook’s-D.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>top</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default None</em>) – how many top epochs to return, all epochs by default</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>top_epochs</strong> – dataframe with EPOCH_ID as index and aggregated Cook’s-D as values</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas DataFrame</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Cook’s distance is aggregated by simple averaging across time and
+channels.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fitgrid.fitgrid.FitGrid.plot_betas">
+<code class="descclassname">fitgrid.fitgrid.FitGrid.</code><code class="descname">plot_betas</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.fitgrid.FitGrid.plot_betas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot betas of the model, one plot per channel, overplotting betas.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fitgrid.fitgrid.FitGrid.plot_adj_rsquared">
+<code class="descclassname">fitgrid.fitgrid.FitGrid.</code><code class="descname">plot_adj_rsquared</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.fitgrid.FitGrid.plot_adj_rsquared" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot adjusted <span class="math notranslate nohighlight">\(R^2\)</span> as a heatmap with marginal bar and line.</p>
+</dd></dl>
+
+</div>
 </div>
 
 
