@@ -194,7 +194,7 @@ the true number of epochs in the generated data is equal to <cite>n_epochs</cite
 <p>Functions that read epochs tables and create <code class="docutils literal notranslate"><span class="pre">Epochs</span></code>.</p>
 <dl class="function">
 <dt id="fitgrid.epochs_from_dataframe">
-<code class="descclassname">fitgrid.</code><code class="descname">epochs_from_dataframe</code><span class="sig-paren">(</span><em>dataframe</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_dataframe" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">fitgrid.</code><code class="descname">epochs_from_dataframe</code><span class="sig-paren">(</span><em>dataframe</em>, <em>channels='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct Epochs object from a Pandas DataFrame epochs table.</p>
 <p>The DataFrame should contain columns with names defined by EPOCH_ID and
 TIME as index columns.</p>
@@ -202,11 +202,17 @@ TIME as index columns.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dataframe</strong> (<em>pandas DataFrame</em>) – a pandas DataFrame object</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dataframe</strong> (<em>pandas DataFrame</em>) – a pandas DataFrame object</li>
+<li><strong>channels</strong> (<em>list of str</em><em>, </em><em>optional</em><em>, </em><em>defaults to CHANNELS</em>) – list of string channel names</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>epochs</strong> – an Epochs object with the data</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>epochs</strong> – an Epochs object with the data</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Epochs</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Epochs</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -214,7 +220,7 @@ TIME as index columns.</p>
 
 <dl class="function">
 <dt id="fitgrid.epochs_from_hdf">
-<code class="descclassname">fitgrid.</code><code class="descname">epochs_from_hdf</code><span class="sig-paren">(</span><em>hdf_filename</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_hdf" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">fitgrid.</code><code class="descname">epochs_from_hdf</code><span class="sig-paren">(</span><em>hdf_filename</em>, <em>channels='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_hdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct Epochs object from an HDF5 file containing an epochs table.</p>
 <p>The HDF5 file should contain columns with names defined by EPOCH_ID and
 TIME either as index columns or as regular columns. This is added as a
@@ -240,7 +246,7 @@ in the index.</p>
 <p>Models and plotting.</p>
 <dl class="function">
 <dt id="fitgrid.epochs.Epochs.lm">
-<code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">lm</code><span class="sig-paren">(</span><em>self</em>, <em>LHS='default'</em>, <em>RHS=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.lm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">lm</code><span class="sig-paren">(</span><em>self</em>, <em>LHS=None</em>, <em>RHS=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.lm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run ordinary least squares linear regression on the epochs.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
