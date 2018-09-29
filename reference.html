@@ -180,12 +180,12 @@
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<p><cite>n_epochs</cite> and <cite>n_categories</cite> interact in the sense that <cite>n_epochs</cite> epochs
-are generated for each level of the categorical variable. In other words,
-the true number of epochs in the generated data is equal to <cite>n_epochs</cite> *
-<cite>n_categories</cite>.</p>
-<p>For example, the default <cite>n_epochs = 10</cite> and <cite>n_categories
-= 2</cite> produces 20 epochs, 10 per category.</p>
+<p><code class="docutils literal notranslate"><span class="pre">n_epochs</span></code> and <code class="docutils literal notranslate"><span class="pre">n_categories</span></code> interact in the sense that <code class="docutils literal notranslate"><span class="pre">n_epochs</span></code>
+epochs are generated for each level of the categorical variable. In other
+words, the true number of epochs in the generated data is equal to
+<code class="docutils literal notranslate"><span class="pre">n_epochs</span></code> * <code class="docutils literal notranslate"><span class="pre">n_categories</span></code>.</p>
+<p>For example, the default <code class="docutils literal notranslate"><span class="pre">n_epochs</span> <span class="pre">=</span> <span class="pre">10</span></code> and <code class="docutils literal notranslate"><span class="pre">n_categories</span>
+<span class="pre">=</span> <span class="pre">2</span></code> produces 20 epochs, 10 per category.</p>
 </dd></dl>
 
 </div>
@@ -250,6 +250,44 @@ in the index.</p>
 <div class="section" id="epochs-methods">
 <h2><code class="docutils literal notranslate"><span class="pre">Epochs</span></code> methods<a class="headerlink" href="#epochs-methods" title="Permalink to this headline">¶</a></h2>
 <p>Models and plotting.</p>
+<dl class="function">
+<dt id="fitgrid.epochs.Epochs.run_model">
+<code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">run_model</code><span class="sig-paren">(</span><em>self</em>, <em>function</em>, <em>channels</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.run_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run an arbitrary model on the epochs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>function</strong> (<em>Python function</em>) – function that runs a model, see Notes below for details</li>
+<li><strong>channels</strong> (<em>list of str</em>) – list of channels to serve as dependent variables</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>grid</strong> – a FitGrid object containing the results</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">FitGrid</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The function should take two parameters, <code class="docutils literal notranslate"><span class="pre">data</span></code> and <code class="docutils literal notranslate"><span class="pre">channel</span></code>, run
+some model on the data, and return an object containing the results.
+<code class="docutils literal notranslate"><span class="pre">data</span></code> will be a snapshot across epochs at a single timepoint,
+containing all channels of interest. <code class="docutils literal notranslate"><span class="pre">channel</span></code> is the name of the
+target variable that the function runs the model against (uses it as
+the dependent variable).</p>
+<p class="rubric">Examples</p>
+<p>Here’s an example of a function that can be passed to <code class="docutils literal notranslate"><span class="pre">run_model</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">regression</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+    <span class="n">formula</span> <span class="o">=</span> <span class="n">channel</span> <span class="o">+</span> <span class="s1">&#39; ~ continuous + categorical&#39;</span>
+    <span class="k">return</span> <span class="n">ols</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="function">
 <dt id="fitgrid.epochs.Epochs.lm">
 <code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">lm</code><span class="sig-paren">(</span><em>self</em>, <em>LHS=None</em>, <em>RHS=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.lm" title="Permalink to this definition">¶</a></dt>
