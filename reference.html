@@ -313,6 +313,42 @@ the dependent variable).</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="fitgrid.epochs.Epochs.mlm">
+<code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">mlm</code><span class="sig-paren">(</span><em>self</em>, <em>LHS=None</em>, <em>RHS=None</em>, <em>re_formula=None</em>, <em>vc_formula=None</em>, <em>groups=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.mlm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a linear mixed effects model on the epochs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>LHS</strong> (<em>list of str</em><em>, </em><em>optional</em><em>, </em><em>defaults to all channels</em>) – list of channels for the left hand side of the formula</li>
+<li><strong>RHS</strong> (<em>str</em>) – fixed effects part of the mixed effect model formula</li>
+<li><strong>re_formula</strong> (<em>str</em>) – A one-sided formula defining the variance structure of the model.
+The default gives a random intercept for each group.</li>
+<li><strong>vc_formula</strong> (<em>dict</em>) – Formulas describing variance components.  <code class="docutils literal notranslate"><span class="pre">vc_formula[vc]</span></code> is the
+formula for the component with variance parameter named vc. The
+formula is processed into a matrix, and the columns of this matrix
+are linearly combined with independent random coefficients having
+mean zero and a common variance.</li>
+<li><strong>groups</strong> (<em>str</em>) – name of the grouper column</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>grid</strong> – FitGrid object containing results of the mixed effect model fitting</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">FitGrid</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code> (and thus <code class="docutils literal notranslate"><span class="pre">fitgrid</span></code>) does not support
+arbitrary crossed models. For more information see <a class="reference external" href="http://www.statsmodels.org/stable/mixed_linear.html">Statsmodels
+documentation on mixed models</a>.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="fitgrid.epochs.Epochs.plot_averages">
 <code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">plot_averages</code><span class="sig-paren">(</span><em>self</em>, <em>channels=None</em>, <em>negative_up=True</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.plot_averages" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot grand mean averages for each channel, negative up by default.</p>
