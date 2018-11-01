@@ -220,7 +220,7 @@ TIME as index columns.</p>
 
 <dl class="function">
 <dt id="fitgrid.epochs_from_hdf">
-<code class="descclassname">fitgrid.</code><code class="descname">epochs_from_hdf</code><span class="sig-paren">(</span><em>hdf_filename</em>, <em>channels='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_hdf" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">fitgrid.</code><code class="descname">epochs_from_hdf</code><span class="sig-paren">(</span><em>hdf_filename</em>, <em>key=None</em>, <em>channels='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_hdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct Epochs object from an HDF5 file containing an epochs table.</p>
 <p>The HDF5 file should contain columns with names defined by EPOCH_ID and
 TIME either as index columns or as regular columns. This is added as a
@@ -232,6 +232,7 @@ in the index.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>hdf_filename</strong> (<em>str</em>) – HDF5 file name</li>
+<li><strong>key</strong> (<em>str</em>) – group identifier for the dataset when HDF5 file contains more than one</li>
 <li><strong>channels</strong> (<em>list of str</em><em>, </em><em>optional</em><em>, </em><em>defaults to CHANNELS</em>) – list of string channel names</li>
 </ul>
 </td>
