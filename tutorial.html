@@ -226,14 +226,19 @@ each timepoint only unique <code class="docutils literal notranslate"><span clas
 </div>
 <div class="section" id="run-a-model">
 <h2>2. Run a model<a class="headerlink" href="#run-a-model" title="Permalink to this headline">¶</a></h2>
-<p>As of now, only linear regression is available. To run linear regression on the
-epochs, use the <code class="code docutils literal notranslate"><span class="pre">lm</span></code> method:</p>
+<p>As of now, linear regression (via <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code>’ <code class="docutils literal notranslate"><span class="pre">ols</span></code>) and linear mixed
+models (via <code class="docutils literal notranslate"><span class="pre">lme4</span></code>’s <code class="docutils literal notranslate"><span class="pre">lmer</span></code>) are available. For example, to run linear
+regression on the epochs, use the <code class="code docutils literal notranslate"><span class="pre">lm</span></code> method:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">lm</span><span class="p">(</span><span class="n">RHS</span><span class="o">=</span><span class="s1">&#39;continuous + categorical&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><code class="code docutils literal notranslate"><span class="pre">epochs.lm</span></code> runs linear regression for each channel, with the channel
 data as the left hand side, and the right hand side given by the Patsy/R style
 formula passed in using the <code class="code docutils literal notranslate"><span class="pre">RHS</span></code> parameter.</p>
+<p>Similarly, to run <cite>lmer</cite>, use the <code class="code docutils literal notranslate"><span class="pre">lmer</span></code> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">lmer</span><span class="p">(</span><span class="n">RHS</span><span class="o">=</span><span class="s1">&#39;continuous + (continuous | categorical)&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p><cite>FitGrid</cite> assumes that the epochs table contains the channels given by
@@ -249,7 +254,7 @@ want to run the model on a specific set of channels, you need pass the
 </div>
 <p>Running a model on the epochs creates a <cite>FitGrid</cite> object, containing fit
 information, such as the betas, and diagnostic information,
-such as <span class="math notranslate nohighlight">\(R^2\)</span>.</p>
+such as <span class="math notranslate nohighlight">\(R^2\)</span> in case of linear regression.</p>
 </div>
 <div class="section" id="examine-results">
 <h2>3. Examine results<a class="headerlink" href="#examine-results" title="Permalink to this headline">¶</a></h2>

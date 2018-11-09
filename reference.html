@@ -302,10 +302,38 @@ the dependent variable).</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>LHS</strong> (<em>list of str</em><em>, </em><em>optional</em><em>, </em><em>defaults to all channels</em>) – list of channels for the left hand side of the regression formula</li>
 <li><strong>RHS</strong> (<em>str</em>) – right hand side of the regression formula</li>
+<li><strong>parallel</strong> (<em>bool</em><em>, </em><em>defaults to False</em>) – change to True to run in parallel</li>
+<li><strong>n_cores</strong> (<em>int</em><em>, </em><em>defaults to 4</em>) – number of processes to use for computation</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>grid</strong> – FitGrid object containing results of the regression</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">FitGrid</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fitgrid.epochs.Epochs.lmer">
+<code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">lmer</code><span class="sig-paren">(</span><em>self</em>, <em>LHS=None</em>, <em>RHS=None</em>, <em>parallel=False</em>, <em>n_cores=4</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.lmer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit lme4 linear mixed model by interfacing with R.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>LHS</strong> (<em>list of str</em><em>, </em><em>optional</em><em>, </em><em>defaults to all channels</em>) – list of channels for the left hand side of the lmer formula</li>
+<li><strong>RHS</strong> (<em>str</em>) – right hand side of the lmer formula</li>
+<li><strong>parallel</strong> (<em>bool</em><em>, </em><em>defaults to False</em>) – change to True to run in parallel</li>
+<li><strong>n_cores</strong> (<em>int</em><em>, </em><em>defaults to 4</em>) – number of processes to use for computation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>grid</strong> – FitGrid object containing results of lmer fitting</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">FitGrid</p>
