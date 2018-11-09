@@ -253,7 +253,7 @@ in the index.</p>
 <p>Models and plotting.</p>
 <dl class="function">
 <dt id="fitgrid.epochs.Epochs.run_model">
-<code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">run_model</code><span class="sig-paren">(</span><em>self</em>, <em>function</em>, <em>channels=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.run_model" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">run_model</code><span class="sig-paren">(</span><em>self</em>, <em>function</em>, <em>channels=None</em>, <em>parallel=False</em>, <em>n_cores=4</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.run_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run an arbitrary model on the epochs.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -262,6 +262,8 @@ in the index.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>function</strong> (<em>Python function</em>) – function that runs a model, see Notes below for details</li>
 <li><strong>channels</strong> (<em>list of str</em>) – list of channels to serve as dependent variables</li>
+<li><strong>parallel</strong> (<em>bool</em><em>, </em><em>defaults to False</em>) – set to True in order to run in parallel</li>
+<li><strong>n_cores</strong> (<em>int</em><em>, </em><em>defaults to 4</em>) – number of processes to run in parallel</li>
 </ul>
 </td>
 </tr>
@@ -291,7 +293,7 @@ the dependent variable).</p>
 
 <dl class="function">
 <dt id="fitgrid.epochs.Epochs.lm">
-<code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">lm</code><span class="sig-paren">(</span><em>self</em>, <em>LHS=None</em>, <em>RHS=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.lm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">lm</code><span class="sig-paren">(</span><em>self</em>, <em>LHS=None</em>, <em>RHS=None</em>, <em>parallel=False</em>, <em>n_cores=4</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.lm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run ordinary least squares linear regression on the epochs.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
