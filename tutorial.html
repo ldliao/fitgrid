@@ -239,6 +239,16 @@ formula passed in using the <code class="code docutils literal notranslate"><spa
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">lmer</span><span class="p">(</span><span class="n">RHS</span><span class="o">=</span><span class="s1">&#39;continuous + (continuous | categorical)&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>With lmer especially, it might be useful to run your model with multiple
+processes to speed it up. This can be achieved by setting <code class="docutils literal notranslate"><span class="pre">parallel</span></code> to
+<code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">n_cores</span></code> to the desired value (defaults to 4) as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">lmer</span><span class="p">(</span><span class="n">RHS</span><span class="o">=</span><span class="s1">&#39;continuous + (continuous | categorical)&#39;</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">lm</span><span class="p">(</span><span class="n">RHS</span><span class="o">=</span><span class="s1">&#39;continuous + categorical&#39;</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_cores</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p><cite>FitGrid</cite> assumes that the epochs table contains the channels given by
