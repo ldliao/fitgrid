@@ -319,7 +319,7 @@ the dependent variable).</p>
 
 <dl class="function">
 <dt id="fitgrid.epochs.Epochs.lmer">
-<code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">lmer</code><span class="sig-paren">(</span><em>self</em>, <em>LHS=None</em>, <em>RHS=None</em>, <em>parallel=False</em>, <em>n_cores=4</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.lmer" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">lmer</code><span class="sig-paren">(</span><em>self</em>, <em>LHS=None</em>, <em>RHS=None</em>, <em>family='gaussian'</em>, <em>conf_int='Wald'</em>, <em>factors=None</em>, <em>permute=None</em>, <em>ordered=False</em>, <em>REML=True</em>, <em>parallel=False</em>, <em>n_cores=4</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.lmer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit lme4 linear mixed model by interfacing with R.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -328,6 +328,22 @@ the dependent variable).</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>LHS</strong> (<em>list of str</em><em>, </em><em>optional</em><em>, </em><em>defaults to all channels</em>) – list of channels for the left hand side of the lmer formula</li>
 <li><strong>RHS</strong> (<em>str</em>) – right hand side of the lmer formula</li>
+<li><strong>family</strong> (<em>str</em><em>, </em><em>defaults to 'gaussian'</em>) – distribution link function to use</li>
+<li><strong>conf_int</strong> (<em>str</em><em>, </em><em>defaults to 'Wald'</em>) – </li>
+<li><strong>factors</strong> (<em>dict</em><em>, </em><em>optional</em>) – Keys should be column names in data to treat as factors. Values
+should either be a list containing unique variable levels if
+dummy-coding or polynomial coding is desired. Otherwise values
+should themselves be dictionaries with unique variable levels as
+keys and desired contrast values (as specified in R!) as keys.</li>
+<li><strong>permute</strong> (<em>int</em><em>, </em><em>defaults to None</em>) – if non-zero, computes parameter significance tests by permuting
+test stastics rather than parametrically. Permutation is done by
+shuffling observations within clusters to respect random effects
+structure of data.</li>
+<li><strong>ordered</strong> (<em>bool</em><em>, </em><em>defaults to False</em>) – whether factors should be treated as ordered polynomial contrasts;
+this will parameterize a model with K-1 orthogonal polynomial
+regressors beginning with a linear contrast based on the factor
+order provided</li>
+<li><strong>REML</strong> (<em>bool</em><em>, </em><em>defaults to True</em>) – change to False to use ML estimation</li>
 <li><strong>parallel</strong> (<em>bool</em><em>, </em><em>defaults to False</em>) – change to True to run in parallel</li>
 <li><strong>n_cores</strong> (<em>int</em><em>, </em><em>defaults to 4</em>) – number of processes to use for computation</li>
 </ul>
