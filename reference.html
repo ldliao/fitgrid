@@ -191,7 +191,8 @@ words, the true number of epochs in the generated data is equal to
 </div>
 <div class="section" id="data-ingestion">
 <h2>Data ingestion<a class="headerlink" href="#data-ingestion" title="Permalink to this headline">¶</a></h2>
-<p>Functions that read epochs tables and create <code class="docutils literal notranslate"><span class="pre">Epochs</span></code>.</p>
+<p>Functions that read epochs tables and create <code class="docutils literal notranslate"><span class="pre">Epochs</span></code> and load <code class="docutils literal notranslate"><span class="pre">FitGrid</span></code>
+objects.</p>
 <dl class="function">
 <dt id="fitgrid.epochs_from_dataframe">
 <code class="descclassname">fitgrid.</code><code class="descname">epochs_from_dataframe</code><span class="sig-paren">(</span><em>dataframe</em>, <em>channels='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_dataframe" title="Permalink to this definition">¶</a></dt>
@@ -242,6 +243,24 @@ in the index.</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Epochs</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fitgrid.load_grid">
+<code class="descclassname">fitgrid.</code><code class="descname">load_grid</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.load_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a FitGrid object from file (created by running grid.save).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) – indicates file to load from</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>grid</strong> – loaded FitGrid object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">FitGrid</td>
 </tr>
 </tbody>
 </table>
@@ -443,6 +462,20 @@ channels.</p>
 <li><strong>bar, heatmap, colorbar, line</strong> (<em>matplotlib.axes._subplots.AxesSubplot</em>) – subplot objects</li>
 </ul>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fitgrid.fitgrid.FitGrid.save">
+<code class="descclassname">fitgrid.fitgrid.FitGrid.</code><code class="descname">save</code><span class="sig-paren">(</span><em>self</em>, <em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.fitgrid.FitGrid.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save FitGrid object to file (reload with <code class="docutils literal notranslate"><span class="pre">fitgrid.load_grid</span></code>).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) – file name to use</td>
 </tr>
 </tbody>
 </table>
