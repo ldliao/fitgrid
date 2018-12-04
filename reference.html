@@ -312,7 +312,7 @@ the dependent variable).</p>
 
 <dl class="function">
 <dt id="fitgrid.epochs.Epochs.lm">
-<code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">lm</code><span class="sig-paren">(</span><em>self</em>, <em>LHS=None</em>, <em>RHS=None</em>, <em>parallel=False</em>, <em>n_cores=4</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.lm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">fitgrid.epochs.Epochs.</code><code class="descname">lm</code><span class="sig-paren">(</span><em>self</em>, <em>LHS=None</em>, <em>RHS=None</em>, <em>parallel=False</em>, <em>n_cores=4</em>, <em>eval_env=4</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs.Epochs.lm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run ordinary least squares linear regression on the epochs.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -323,6 +323,7 @@ the dependent variable).</p>
 <li><strong>RHS</strong> (<em>str</em>) – right hand side of the regression formula</li>
 <li><strong>parallel</strong> (<em>bool</em><em>, </em><em>defaults to False</em>) – change to True to run in parallel</li>
 <li><strong>n_cores</strong> (<em>int</em><em>, </em><em>defaults to 4</em>) – number of processes to use for computation</li>
+<li><strong>eval_env</strong> (<em>int</em><em> or </em><em>patsy.EvalEnvironment</em><em>, </em><em>defaults to 4</em>) – environment to use for evaluating patsy formulas, see patsy docs</li>
 </ul>
 </td>
 </tr>
