@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Tutorial" href="tutorial.html" /> 
+    <link rel="prev" title="Details" href="details.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -79,7 +79,9 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="research_context.html">Research context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="details.html">Details</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#data-generation">Data generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#data-ingestion">Data ingestion</a></li>
@@ -87,6 +89,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#model-running">Model running</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fitgrid-methods"><code class="docutils literal notranslate"><span class="pre">FitGrid</span></code> methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#lmfitgrid-methods"><code class="docutils literal notranslate"><span class="pre">LMFitGrid</span></code> methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model-diagnostic-utilities">Model diagnostic utilities</a></li>
 </ul>
 </li>
 </ul>
@@ -494,6 +497,159 @@ channels.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="model-diagnostic-utilities">
+<span id="id1"></span><h2>Model diagnostic utilities<a class="headerlink" href="#model-diagnostic-utilities" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="fitgrid.utils.lmer.fit_lmers">
+<code class="descclassname">fitgrid.utils.lmer.</code><code class="descname">fit_lmers</code><span class="sig-paren">(</span><em>fg_epochs</em>, <em>LHS</em>, <em>RHSs</em>, <em>parallel=True</em>, <em>n_cores=4</em>, <em>save_as=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.utils.lmer.fit_lmers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit a set of lmer models and return rERPs, AICs, and lmer warnings</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>LHS</strong> (<em>fitgrid.lmer LHS specification</em>) – </li>
+<li><strong>RHSs</strong> (<em>list of fitgrid.lmer RHS specifications</em>) – </li>
+<li><strong>parallel</strong> (<em>bool</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>lmer_coefs</strong> – Time, model, param, key x LHS</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">multi-indexed pandas.DataFrame</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FutureWarning</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LHS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MiPf&#39;</span><span class="p">,</span> <span class="s1">&#39;MiCe&#39;</span><span class="p">,</span> <span class="s1">&#39;MiPa&#39;</span><span class="p">,</span> <span class="s1">&#39;MiOc&#39;</span><span class="p">,</span> <span class="s1">&#39;cproi&#39;</span><span class="p">]</span>
+<span class="n">LHS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;cproi&#39;</span><span class="p">]</span>
+
+<span class="n">RHSs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;a_cloze_c + (a_cloze_c | sub_id) + (a_cloze_c | m_item_id)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;a_cloze_c + (a_cloze_c | sub_id) + (1 | m_item_id)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;a_cloze_c + (1 | sub_id) + (a_cloze | m_item_id)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;a_cloze_c + (1 | sub_id) + (1 | m_item_id)&#39;</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fitgrid.utils.lmer.get_lmer_AICs">
+<code class="descclassname">fitgrid.utils.lmer.</code><code class="descname">get_lmer_AICs</code><span class="sig-paren">(</span><em>lmer_coefs</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.utils.lmer.get_lmer_AICs" title="Permalink to this definition">¶</a></dt>
+<dd><p>collect AICs, AIC_min deltas, and lmer warnings from lmer_coefs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>lmer_coefs</strong> (<em>multi-indexed pandas.DataFrame</em>) – Time, model, param, key x LHS, as returned by fit_lmers()</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>aics</strong></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">multi-indexed pandas pd.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fitgrid.utils.lmer.plot_lmer_AICs">
+<code class="descclassname">fitgrid.utils.lmer.</code><code class="descname">plot_lmer_AICs</code><span class="sig-paren">(</span><em>aics</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.utils.lmer.plot_lmer_AICs" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot FitGrid AICs and lmer warnings</p>
+<p>Thresholds of AIC_min delta at 2, 4, 7, 10 are from Burnham &amp;
+Anderson 2004, p. 271.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>aics</strong> (<em>pd.DataFrame as returned by get_lmer_AICs</em><em>(</em><em>)</em>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>f</strong></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">matplotlib.pyplot.Figure</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fitgrid.utils.lmer.plot_lmer_rERPs">
+<code class="descclassname">fitgrid.utils.lmer.</code><code class="descname">plot_lmer_rERPs</code><span class="sig-paren">(</span><em>LHS</em>, <em>lmer_coefs</em>, <em>alpha=0.05</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.utils.lmer.plot_lmer_rERPs" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lmer_coefs</strong> (<em>pd.DataFrame see fitgrid.utils.lmer.fit_lmers</em><em>(</em><em>)</em>) – </li>
+<li><strong>LHS</strong> (<em>fitgrid.LHS specification</em><em>, </em><em>see fitgrid.fitgrid.lmer</em><em>(</em><em>)</em>) – </li>
+<li><strong>alpha</strong> (<em>float</em>) – one-tailed &gt; 0 alpha level</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>f</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">matplotlib.pyplot.Figure</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fitgrid.utils.lmer.get_lmer_dfbetas">
+<code class="descclassname">fitgrid.utils.lmer.</code><code class="descname">get_lmer_dfbetas</code><span class="sig-paren">(</span><em>epochs</em>, <em>factor</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.utils.lmer.get_lmer_dfbetas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit lmers leaving out factor levels one by one, compute DBETAS.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>epochs</strong> (<em>Epochs</em>) – Epochs object</li>
+<li><strong>factor</strong> (<em>str</em>) – column name of the factor of interest</li>
+<li><strong>**kwargs</strong> – keyword arguments to pass on to <code class="docutils literal notranslate"><span class="pre">fitgrid.lmer</span></code>, like <code class="docutils literal notranslate"><span class="pre">RHS</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dfbetas</strong> – dataframe containing DFBETAS values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Example calculation showing how to pass in model fitting parameters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dfbetas</span> <span class="o">=</span> <span class="n">fitgrid</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">lmer</span><span class="o">.</span><span class="n">get_lmer_dfbetas</span><span class="p">(</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
+    <span class="n">factor</span><span class="o">=</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span>
+    <span class="n">RHS</span><span class="o">=</span><span class="s1">&#39;x + (x|a)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>DFBETAS is computed according to the following formula <a class="footnote-reference" href="#id3" id="id2">[1]</a>:</p>
+<div class="math notranslate nohighlight">
+\[DFBETAS_{ij} = \frac{\hat{\gamma}_i - \hat{\gamma}_{i(-j)}}{se\left(\hat{\gamma}_{i(-j)}\right)}\]</div>
+<p>for parameter <span class="math notranslate nohighlight">\(i\)</span> and level <span class="math notranslate nohighlight">\(j\)</span> of <code class="docutils literal notranslate"><span class="pre">factor</span></code>.</p>
+<p class="rubric">References</p>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>Nieuwenhuis, R., te Grotenhuis, M., &amp; Pelzer, B. (2012).
+influence.ME: tools for detecting influential data in mixed effects models.
+R journal, 4(2), 38-47.</td></tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -505,7 +661,7 @@ channels.</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="tutorial.html" class="btn btn-neutral" title="Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="details.html" class="btn btn-neutral" title="Details" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
