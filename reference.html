@@ -162,7 +162,7 @@
 <p><code class="docutils literal notranslate"><span class="pre">fitgrid</span></code> has a built-in function that generates data and creates <code class="docutils literal notranslate"><span class="pre">Epochs</span></code>:</p>
 <dl class="function">
 <dt id="fitgrid.generate">
-<code class="descclassname">fitgrid.</code><code class="descname">generate</code><span class="sig-paren">(</span><em>n_epochs=10</em>, <em>n_samples=100</em>, <em>n_categories=2</em>, <em>n_channels=32</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.generate" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">fitgrid.</code><code class="descname">generate</code><span class="sig-paren">(</span><em>n_epochs=10</em>, <em>n_samples=100</em>, <em>n_categories=2</em>, <em>n_channels=32</em>, <em>time='Time'</em>, <em>epoch_id='Epoch_idx'</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.generate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return Epochs object with fake EEG data.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -173,6 +173,8 @@
 <li><strong>n_samples</strong> (<em>int</em>) – number of samples in a single epochs</li>
 <li><strong>n_categories</strong> (<em>int</em>) – number of levels of the categorical variable</li>
 <li><strong>n_channels</strong> (<em>int</em>) – number of time series representing EEG channels</li>
+<li><strong>time</strong> (<em>str</em><em>, </em><em>defaults to defaults.TIME</em>) – time column name</li>
+<li><strong>epoch_id</strong> (<em>str</em><em>, </em><em>defaults to defaults.EPOCH_ID</em>) – epoch identifier column name</li>
 </ul>
 </td>
 </tr>
@@ -200,7 +202,7 @@ words, the true number of epochs in the generated data is equal to
 objects.</p>
 <dl class="function">
 <dt id="fitgrid.epochs_from_dataframe">
-<code class="descclassname">fitgrid.</code><code class="descname">epochs_from_dataframe</code><span class="sig-paren">(</span><em>dataframe</em>, <em>channels='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_dataframe" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">fitgrid.</code><code class="descname">epochs_from_dataframe</code><span class="sig-paren">(</span><em>dataframe</em>, <em>time</em>, <em>epoch_id</em>, <em>channels</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct Epochs object from a Pandas DataFrame epochs table.</p>
 <p>The DataFrame should contain columns with names defined by EPOCH_ID and
 TIME as index columns.</p>
@@ -226,7 +228,7 @@ TIME as index columns.</p>
 
 <dl class="function">
 <dt id="fitgrid.epochs_from_hdf">
-<code class="descclassname">fitgrid.</code><code class="descname">epochs_from_hdf</code><span class="sig-paren">(</span><em>hdf_filename</em>, <em>key=None</em>, <em>channels='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_hdf" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">fitgrid.</code><code class="descname">epochs_from_hdf</code><span class="sig-paren">(</span><em>hdf_filename</em>, <em>key</em>, <em>time</em>, <em>epoch_id</em>, <em>channels</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_hdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct Epochs object from an HDF5 file containing an epochs table.</p>
 <p>The HDF5 file should contain columns with names defined by EPOCH_ID and
 TIME either as index columns or as regular columns. This is added as a
