@@ -80,7 +80,6 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="research_context.html">Research context</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="details.html">Details</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
 </ul>
@@ -145,14 +144,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="fitgrid">
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="fitgrid">
 <h1><cite>fitgrid</cite><a class="headerlink" href="#fitgrid" title="Permalink to this headline">¶</a></h1>
 <p><cite>fitgrid</cite> is a Python library for running linear models on stacks of epochs.</p>
 <p>Here’s a quick demo:</p>
 <ol class="arabic">
 <li><p class="first">Import <cite>fitgrid</cite> and read an epochs table from an HDF5 file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitgrid</span>
-<span class="n">epochs</span> <span class="o">=</span> <span class="n">fitgrid</span><span class="o">.</span><span class="n">epochs_from_hdf</span><span class="p">(</span><span class="s1">&#39;epochs_table.h5&#39;</span><span class="p">)</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="n">fitgrid</span><span class="o">.</span><span class="n">epochs_from_hdf</span><span class="p">(</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;epochs_table.h5&#39;</span><span class="p">,</span>
+    <span class="n">time</span><span class="o">=</span><span class="n">fitgrid</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">TIME</span>
+    <span class="n">epoch_id</span><span class="o">=</span><span class="n">fitgrid</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">EPOCH_ID</span><span class="p">,</span>
+    <span class="n">channels</span><span class="o">=</span><span class="n">fitgrid</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">CHANNELS</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </li>
@@ -219,6 +247,7 @@ example, the betas:</p>
         <script type="text/javascript" src="_static/doctools.js"></script>
         <script type="text/javascript" src="_static/language_data.js"></script>
         <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
 
   

@@ -80,7 +80,6 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="research_context.html">Research context</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="details.html">Details</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#data-generation">Data generation</a></li>
@@ -154,7 +153,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="reference">
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="reference">
 <h1>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h1>
 <p>This is a list of tools available in <code class="docutils literal notranslate"><span class="pre">fitgrid</span></code>.</p>
 <span class="target" id="module-fitgrid"></span><div class="section" id="data-generation">
@@ -204,15 +227,17 @@ objects.</p>
 <dt id="fitgrid.epochs_from_dataframe">
 <code class="descclassname">fitgrid.</code><code class="descname">epochs_from_dataframe</code><span class="sig-paren">(</span><em>dataframe</em>, <em>time</em>, <em>epoch_id</em>, <em>channels</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct Epochs object from a Pandas DataFrame epochs table.</p>
-<p>The DataFrame should contain columns with names defined by EPOCH_ID and
-TIME as index columns.</p>
+<p>The DataFrame should contain columns with names defined by epoch_id and
+time as index columns.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>dataframe</strong> (<em>pandas DataFrame</em>) – a pandas DataFrame object</li>
-<li><strong>channels</strong> (<em>list of str</em><em>, </em><em>optional</em><em>, </em><em>defaults to CHANNELS</em>) – list of string channel names</li>
+<li><strong>time</strong> (<em>str</em>) – time column name</li>
+<li><strong>epoch_id</strong> (<em>str</em>) – epoch identifier column name</li>
+<li><strong>channels</strong> (<em>list of str</em>) – list of string channel names</li>
 </ul>
 </td>
 </tr>
@@ -228,10 +253,10 @@ TIME as index columns.</p>
 
 <dl class="function">
 <dt id="fitgrid.epochs_from_hdf">
-<code class="descclassname">fitgrid.</code><code class="descname">epochs_from_hdf</code><span class="sig-paren">(</span><em>hdf_filename</em>, <em>key</em>, <em>time</em>, <em>epoch_id</em>, <em>channels</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_hdf" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">fitgrid.</code><code class="descname">epochs_from_hdf</code><span class="sig-paren">(</span><em>filename</em>, <em>key</em>, <em>time</em>, <em>epoch_id</em>, <em>channels</em><span class="sig-paren">)</span><a class="headerlink" href="#fitgrid.epochs_from_hdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct Epochs object from an HDF5 file containing an epochs table.</p>
-<p>The HDF5 file should contain columns with names defined by EPOCH_ID and
-TIME either as index columns or as regular columns. This is added as a
+<p>The HDF5 file should contain columns with names defined by <cite>epoch_id</cite> and
+<cite>time</cite> either as index columns or as regular columns. This is added as a
 convenience, in general, input epochs tables should contain these columns
 in the index.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -239,9 +264,11 @@ in the index.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>hdf_filename</strong> (<em>str</em>) – HDF5 file name</li>
+<li><strong>filename</strong> (<em>str</em>) – HDF5 file name</li>
 <li><strong>key</strong> (<em>str</em>) – group identifier for the dataset when HDF5 file contains more than one</li>
-<li><strong>channels</strong> (<em>list of str</em><em>, </em><em>optional</em><em>, </em><em>defaults to CHANNELS</em>) – list of string channel names</li>
+<li><strong>time</strong> (<em>str</em>) – time column name</li>
+<li><strong>epoch_id</strong> (<em>str</em>) – epoch identifier column name</li>
+<li><strong>channels</strong> (<em>list of str</em>) – list of string channel names</li>
 </ul>
 </td>
 </tr>
@@ -286,7 +313,7 @@ in the index.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>channels</strong> (<em>list of str</em><em>, </em><em>optional</em><em>, </em><em>default CHANNELS</em>) – list of channel names to plot the averages</li>
+<li><strong>channels</strong> (<em>list of str</em><em>, </em><em>optional</em><em>, </em><em>defaults to all channels</em>) – list of channel names to plot the averages</li>
 <li><strong>negative_up</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default True</em>) – by convention, ERPs are plotted negative voltage up</li>
 </ul>
 </td>
@@ -448,7 +475,7 @@ the dependent variable).</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>top</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default None</em>) – how many top epochs to return, all epochs by default</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>top_epochs</strong> – dataframe with EPOCH_ID as index and aggregated Cook’s-D as values</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>top_epochs</strong> – dataframe with epoch_id as index and aggregated Cook’s-D as values</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas DataFrame</td>
 </tr>
@@ -697,6 +724,7 @@ R journal, 4(2), 38-47.</td></tr>
         <script type="text/javascript" src="_static/doctools.js"></script>
         <script type="text/javascript" src="_static/language_data.js"></script>
         <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
 
   
