@@ -1,0 +1,668 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>fitgrid.utils.lmer &mdash; fitgrid 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> fitgrid
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../research_context.html">Research context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../details.html">Details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">fitgrid</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>fitgrid.utils.lmer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for fitgrid.utils.lmer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">fitgrid</span>
+
+
+<div class="viewcode-block" id="fit_lmers"><a class="viewcode-back" href="../../../reference.html#fitgrid.utils.lmer.fit_lmers">[docs]</a><span class="k">def</span> <span class="nf">fit_lmers</span><span class="p">(</span><span class="n">fg_epochs</span><span class="p">,</span> <span class="n">LHS</span><span class="p">,</span> <span class="n">RHSs</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_cores</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Fit a set of lmer models and return rERPs, AICs, and lmer warnings</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    LHS : fitgrid.lmer LHS specification</span>
+
+<span class="sd">    RHSs : list of fitgrid.lmer RHS specifications</span>
+
+<span class="sd">    parallel : bool</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    lmer_coefs : multi-indexed pandas.DataFrame</span>
+<span class="sd">       Time, model, param, key x LHS</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    FutureWarning</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ::</span>
+
+<span class="sd">        LHS = [&#39;MiPf&#39;, &#39;MiCe&#39;, &#39;MiPa&#39;, &#39;MiOc&#39;, &#39;cproi&#39;]</span>
+<span class="sd">        LHS = [&#39;cproi&#39;]</span>
+
+<span class="sd">        RHSs = [</span>
+<span class="sd">            &#39;a_cloze_c + (a_cloze_c | sub_id) + (a_cloze_c | m_item_id)&#39;,</span>
+<span class="sd">            &#39;a_cloze_c + (a_cloze_c | sub_id) + (1 | m_item_id)&#39;,</span>
+<span class="sd">            &#39;a_cloze_c + (1 | sub_id) + (a_cloze | m_item_id)&#39;,</span>
+<span class="sd">            &#39;a_cloze_c + (1 | sub_id) + (1 | m_item_id)&#39;</span>
+<span class="sd">        ]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># container to hold model information scraped from the fits</span>
+    <span class="n">lmer_coefs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="n">attribs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;AIC&#39;</span><span class="p">,</span> <span class="s1">&#39;has_warning&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">rhs</span> <span class="ow">in</span> <span class="n">RHSs</span><span class="p">:</span>
+        <span class="n">fg_lmer</span> <span class="o">=</span> <span class="n">fitgrid</span><span class="o">.</span><span class="n">lmer</span><span class="p">(</span>
+            <span class="n">fg_epochs</span><span class="p">,</span> <span class="n">LHS</span><span class="o">=</span><span class="n">LHS</span><span class="p">,</span> <span class="n">RHS</span><span class="o">=</span><span class="n">rhs</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">parallel</span><span class="p">,</span> <span class="n">n_cores</span><span class="o">=</span><span class="n">n_cores</span>
+        <span class="p">)</span>
+        <span class="n">fg_lmer</span><span class="o">.</span><span class="n">coefs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="s1">&#39;param&#39;</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">]</span>
+
+        <span class="c1"># coef estimates and stats ... these are 2-D</span>
+        <span class="n">coefs_df</span> <span class="o">=</span> <span class="n">fg_lmer</span><span class="o">.</span><span class="n">coefs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">coefs_df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">rhs</span><span class="p">)</span>
+        <span class="n">coefs_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">coefs_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">([</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="s1">&#39;param&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># LOGGER.info(&#39;collecting fit attributes into coefs dataframe&#39;)</span>
+        <span class="c1"># scrape AIC and other useful 1-D fit attributes into coefs_df</span>
+        <span class="k">for</span> <span class="n">attrib</span> <span class="ow">in</span> <span class="n">attribs</span><span class="p">:</span>
+            <span class="c1"># LOGGER.info(attrib)</span>
+            <span class="n">attrib_df</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fg_lmer</span><span class="p">,</span> <span class="n">attrib</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">attrib_df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">rhs</span><span class="p">)</span>
+            <span class="n">attrib_df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="n">attrib</span><span class="p">)</span>
+
+            <span class="c1"># propagate attributes to each param ... wasteful but tidy</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">coefs_df</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+                <span class="n">param_attrib</span> <span class="o">=</span> <span class="n">attrib_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">param_attrib</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;param&#39;</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
+                <span class="n">coefs_df</span> <span class="o">=</span> <span class="n">coefs_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param_attrib</span><span class="p">)</span>
+
+        <span class="c1"># update main container</span>
+        <span class="n">lmer_coefs</span> <span class="o">=</span> <span class="n">lmer_coefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coefs_df</span><span class="p">)</span>
+        <span class="k">del</span> <span class="p">(</span><span class="n">fg_lmer</span><span class="p">)</span>
+
+    <span class="c1"># refresh index</span>
+    <span class="n">lmer_coefs</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;param&#39;</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">],</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">lmer_coefs</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">save_as</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># filepath, h5 group slashpath</span>
+        <span class="n">coefs</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="n">save_as</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">save_as</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="ne">FutureWarning</span><span class="p">(</span><span class="s1">&#39;lmer_coefs are in early days, subject to change&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lmer_coefs</span></div>
+
+
+<div class="viewcode-block" id="get_lmer_AICs"><a class="viewcode-back" href="../../../reference.html#fitgrid.utils.lmer.get_lmer_AICs">[docs]</a><span class="k">def</span> <span class="nf">get_lmer_AICs</span><span class="p">(</span><span class="n">lmer_coefs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;collect AICs, AIC_min deltas, and lmer warnings from lmer_coefs</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    lmer_coefs : multi-indexed pandas.DataFrame</span>
+<span class="sd">       Time, model, param, key x LHS, as returned by fit_lmers()</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    aics : multi-indexed pandas pd.DataFrame</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># AIC and lmer warnings are 1 per model, pull from the first</span>
+    <span class="c1"># model coefficient only, typically (Intercept)</span>
+    <span class="n">first_param</span> <span class="o">=</span> <span class="n">lmer_coefs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">&#39;param&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">AICs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">lmer_coefs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">IndexSlice</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">first_param</span><span class="p">,</span> <span class="s1">&#39;AIC&#39;</span><span class="p">],</span> <span class="p">:]</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">([</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="s1">&#39;param&#39;</span><span class="p">],</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;AIC&#39;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">AICs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">AICs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span>
+    <span class="n">AICs</span><span class="p">[</span><span class="s1">&#39;min_delta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">AICs</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># calculate AIC_min for the fitted models at each time, channel</span>
+    <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">AICs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">AICs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">&#39;channel&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+            <span class="n">slicer</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">IndexSlice</span><span class="p">[</span><span class="n">time</span><span class="p">,</span> <span class="p">:,</span> <span class="n">chan</span><span class="p">]</span>
+            <span class="n">AICs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">slicer</span><span class="p">,</span> <span class="s1">&#39;min_delta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">AICs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">slicer</span><span class="p">,</span> <span class="s1">&#39;AIC&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span>
+                <span class="n">AICs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">slicer</span><span class="p">,</span> <span class="s1">&#39;AIC&#39;</span><span class="p">]</span>
+            <span class="p">)</span>
+
+    <span class="c1"># merge in corresponding column of lmer warnings</span>
+    <span class="n">has_warnings</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="n">lmer_coefs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">IndexSlice</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">first_param</span><span class="p">,</span> <span class="s1">&#39;has_warning&#39;</span><span class="p">],</span> <span class="p">:]</span>
+        <span class="o">.</span><span class="n">reset_index</span><span class="p">([</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="s1">&#39;param&#39;</span><span class="p">],</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;has_warning&#39;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">has_warnings</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">has_warnings</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span>
+    <span class="n">has_warnings</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">AICs</span> <span class="o">=</span> <span class="n">AICs</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">has_warnings</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="ne">FutureWarning</span><span class="p">(</span><span class="s1">&#39;lmer_coef AICs are in early days, subject to change&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">AICs</span></div>
+
+
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1"># plotting</span>
+<span class="c1"># ------------------------------------------------------------</span>
+<div class="viewcode-block" id="plot_lmer_AICs"><a class="viewcode-back" href="../../../reference.html#fitgrid.utils.lmer.plot_lmer_AICs">[docs]</a><span class="k">def</span> <span class="nf">plot_lmer_AICs</span><span class="p">(</span><span class="n">aics</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;plot FitGrid AICs and lmer warnings</span>
+
+<span class="sd">    Thresholds of AIC_min delta at 2, 4, 7, 10 are from Burnham &amp;</span>
+<span class="sd">    Anderson 2004, p. 271.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    aics : pd.DataFrame as returned by get_lmer_AICs()</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    f : matplotlib.pyplot.Figure</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">models</span> <span class="o">=</span> <span class="n">aics</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+    <span class="n">channels</span> <span class="o">=</span> <span class="n">aics</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">&#39;channel&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="n">f</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">),</span>
+        <span class="mi">2</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">6</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)),</span>
+        <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;hspace&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">models</span><span class="p">):</span>
+        <span class="c1"># channel traces</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">traces</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">heatmap</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">traces</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">heatmap</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">traces</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;aic min delta: </span><span class="si">{m}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+            <span class="n">min_deltas</span> <span class="o">=</span> <span class="n">aics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">pd</span><span class="o">.</span><span class="n">IndexSlice</span><span class="p">[:,</span> <span class="n">m</span><span class="p">,</span> <span class="n">c</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;min_delta&#39;</span><span class="p">,</span> <span class="s1">&#39;has_warning&#39;</span><span class="p">]</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+            <span class="n">traces</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">min_deltas</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">],</span> <span class="n">min_deltas</span><span class="p">[</span><span class="s1">&#39;min_delta&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+            <span class="n">warn_ma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">min_deltas</span><span class="p">[</span><span class="s1">&#39;has_warning&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">traces</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+                <span class="n">min_deltas</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">warn_ma</span><span class="p">],</span>
+                <span class="n">min_deltas</span><span class="p">[</span><span class="s1">&#39;min_delta&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">warn_ma</span><span class="p">],</span>
+                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">traces</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+        <span class="n">aic_min_delta_bounds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">aic_min_delta_bounds</span><span class="p">:</span>
+            <span class="n">traces</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dotted&#39;</span><span class="p">)</span>
+
+        <span class="c1"># heat map</span>
+        <span class="n">_min_deltas</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">aics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">IndexSlice</span><span class="p">[:,</span> <span class="n">m</span><span class="p">,</span> <span class="p">:],</span> <span class="s1">&#39;min_delta&#39;</span><span class="p">]</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="s1">&#39;channel&#39;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">_has_warnings</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">aics</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">IndexSlice</span><span class="p">[:,</span> <span class="n">m</span><span class="p">,</span> <span class="p">:],</span> <span class="s1">&#39;has_warning&#39;</span><span class="p">]</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="s1">&#39;channel&#39;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">_min_deltas_ma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">_has_warnings</span><span class="p">)</span>
+
+        <span class="c1"># bluish color blind friendly</span>
+        <span class="n">pal</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#eff3ff&#39;</span><span class="p">,</span> <span class="s1">&#39;#bdd7e7&#39;</span><span class="p">,</span> <span class="s1">&#39;#6baed6&#39;</span><span class="p">,</span> <span class="s1">&#39;#3182bd&#39;</span><span class="p">,</span> <span class="s1">&#39;#08519c&#39;</span><span class="p">]</span>
+
+        <span class="c1"># redish color blind friendly</span>
+        <span class="c1"># pal = [&#39;#fee5d9&#39;, &#39;#fcae91&#39;, &#39;#fb6a4a&#39;, &#39;#de2d26&#39;, &#39;#a50f15&#39;]</span>
+
+        <span class="c1"># grayscale</span>
+        <span class="c1"># pal = [&#39;#f7f7f7&#39;, &#39;#cccccc&#39;, &#39;#969696&#39;, &#39;#636363&#39;, &#39;#252525&#39;]</span>
+
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">ListedColormap</span><span class="p">(</span><span class="n">pal</span><span class="p">)</span>
+        <span class="n">cmap</span><span class="o">.</span><span class="n">set_over</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;#fcae91&#39;</span><span class="p">)</span>
+        <span class="c1"># cmap.set_under(&#39;0.75&#39;)</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="n">aic_min_delta_bounds</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">BoundaryNorm</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="n">cmap</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+        <span class="c1"># cb2 = mpl.colorbar.ColorbarBase(cmap=cmap,</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">heatmap</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
+            <span class="n">_min_deltas</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_min_deltas</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">_min_deltas</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+            <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># lmer warnings mask</span>
+        <span class="n">pal_ma</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">]</span>
+        <span class="n">bounds_ma</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]</span>
+        <span class="n">cmap_ma</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">ListedColormap</span><span class="p">(</span><span class="n">pal_ma</span><span class="p">)</span>
+        <span class="n">cmap_ma</span><span class="o">.</span><span class="n">set_over</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">)</span>
+        <span class="n">cmap_ma</span><span class="o">.</span><span class="n">set_under</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>  <span class="c1"># don&#39;t show goods</span>
+        <span class="n">norm_ma</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">BoundaryNorm</span><span class="p">(</span><span class="n">bounds_ma</span><span class="p">,</span> <span class="n">cmap_ma</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+        <span class="n">im_ma</span> <span class="o">=</span> <span class="n">heatmap</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
+            <span class="n">_has_warnings</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_has_warnings</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">_has_warnings</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="n">cmap_ma</span><span class="p">,</span>
+            <span class="n">norm</span><span class="o">=</span><span class="n">norm_ma</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">yloc</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">ticker</span><span class="o">.</span><span class="n">IndexLocator</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">heatmap</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">yloc</span><span class="p">)</span>
+        <span class="n">heatmap</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">_min_deltas</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">heatmap</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="s1">&#39;max&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">f</span></div>
+
+
+<div class="viewcode-block" id="plot_lmer_rERPs"><a class="viewcode-back" href="../../../reference.html#fitgrid.utils.lmer.plot_lmer_rERPs">[docs]</a><span class="k">def</span> <span class="nf">plot_lmer_rERPs</span><span class="p">(</span><span class="n">LHS</span><span class="p">,</span> <span class="n">lmer_coefs</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lmer_coefs : pd.DataFrame see fitgrid.utils.lmer.fit_lmers()</span>
+
+<span class="sd">    LHS : fitgrid.LHS specification, see fitgrid.fitgrid.lmer()</span>
+
+<span class="sd">    alpha : float</span>
+<span class="sd">       one-tailed &gt; 0 alpha level</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    f : matplotlib.pyplot.Figure</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">figs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">LHS</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">LHS</span> <span class="o">=</span> <span class="p">[</span><span class="n">LHS</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">LHS</span><span class="p">])</span>
+
+    <span class="c1"># coefs = fg_lmer.coefs.index.get_level_values(&#39;param&#39;).unique()</span>
+    <span class="n">coefs</span> <span class="o">=</span> <span class="n">lmer_coefs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">&#39;param&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">LHS</span><span class="p">:</span>
+        <span class="n">f</span><span class="p">,</span> <span class="n">ax_coef</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">coefs</span><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;hspace&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">coefs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">ax_coef</span> <span class="o">=</span> <span class="p">[</span><span class="n">ax_coef</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">coef</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">coefs</span><span class="p">):</span>
+
+            <span class="c1"># unstack this coef, column for plotting</span>
+            <span class="n">fg_lmer_coef</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">lmer_coefs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">IndexSlice</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">coef</span><span class="p">],</span> <span class="n">col</span><span class="p">]</span>
+                <span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;key&#39;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="c1"># log scale DF</span>
+            <span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;log10DF&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;DF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="c1"># calculate B-H FDR</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fg_lmer_coef</span><span class="p">)</span>
+            <span class="n">pvals</span> <span class="o">=</span> <span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;P-val&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
+            <span class="n">ks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pvals</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="n">k</span> <span class="o">/</span> <span class="n">m</span> <span class="o">*</span> <span class="n">alpha</span><span class="p">:</span>
+                    <span class="n">ks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">crit_p</span> <span class="o">=</span> <span class="n">pvals</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">ks</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">crit_p</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;sig_fdr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;P-val&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">crit_p</span>
+
+            <span class="c1"># slice out sig ps for plotting</span>
+            <span class="n">sig_ps</span> <span class="o">=</span> <span class="n">fg_lmer_coef</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;sig_fdr&#39;</span><span class="p">],</span> <span class="p">:]</span>
+
+            <span class="c1"># lmer SEs</span>
+            <span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;mn+SE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;Estimate&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;SE&#39;</span><span class="p">]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;mn-SE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;Estimate&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;SE&#39;</span><span class="p">]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+
+            <span class="n">fg_lmer_coef</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span>
+                <span class="n">y</span><span class="o">=</span><span class="s1">&#39;Estimate&#39;</span><span class="p">,</span>
+                <span class="n">ax</span><span class="o">=</span><span class="n">ax_coef</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">coef</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">ax_coef</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">],</span>
+                <span class="n">y1</span><span class="o">=</span><span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;mn+SE&#39;</span><span class="p">],</span>
+                <span class="n">y2</span><span class="o">=</span><span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;mn-SE&#39;</span><span class="p">],</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># plot log10 df</span>
+            <span class="n">fg_lmer_coef</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;log10DF&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_coef</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+
+            <span class="c1"># color sig ps</span>
+            <span class="n">ax_coef</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+                <span class="n">sig_ps</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">],</span>
+                <span class="n">sig_ps</span><span class="p">[</span><span class="s1">&#39;Estimate&#39;</span><span class="p">],</span>
+                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;BH FDR p &lt; crit </span><span class="si">{crit_p:0.2}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># color warnings last to mask sig ps</span>
+            <span class="n">warn_ma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;has_warning&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">ax_coef</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+                <span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">warn_ma</span><span class="p">],</span>
+                <span class="n">fg_lmer_coef</span><span class="p">[</span><span class="s1">&#39;Estimate&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">warn_ma</span><span class="p">],</span>
+                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s1">&#39;lmer warnings&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">ax_coef</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+            <span class="n">ax_coef</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+            <span class="c1"># title</span>
+            <span class="c1"># rhs = fg_lmer.formula[col].unique()[0]</span>
+            <span class="n">formula</span> <span class="o">=</span> <span class="n">fg_lmer_coef</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+            <span class="n">ax_coef</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{col}</span><span class="s1"> </span><span class="si">{coef}</span><span class="s1">: </span><span class="si">{formula}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">figs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">figs</span></div>
+
+
+<div class="viewcode-block" id="get_lmer_dfbetas"><a class="viewcode-back" href="../../../reference.html#fitgrid.utils.lmer.get_lmer_dfbetas">[docs]</a><span class="k">def</span> <span class="nf">get_lmer_dfbetas</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit lmers leaving out factor levels one by one, compute DBETAS.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    epochs : Epochs</span>
+<span class="sd">        Epochs object</span>
+<span class="sd">    factor : str</span>
+<span class="sd">        column name of the factor of interest</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        keyword arguments to pass on to ``fitgrid.lmer``, like ``RHS``</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dfbetas : pandas.DataFrame</span>
+<span class="sd">        dataframe containing DFBETAS values</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Example calculation showing how to pass in model fitting parameters::</span>
+
+<span class="sd">        dfbetas = fitgrid.utils.lmer.get_lmer_dfbetas(</span>
+<span class="sd">            epochs=epochs,</span>
+<span class="sd">            factor=&#39;subject_id&#39;,</span>
+<span class="sd">            RHS=&#39;x + (x|a)</span>
+<span class="sd">        )</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    DFBETAS is computed according to the following formula [1]_:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">       DFBETAS_{ij} = \frac{\hat{\gamma}_i - \hat{\gamma}_{i(-j)}}{se\left(\hat{\gamma}_{i(-j)}\right)}</span>
+
+<span class="sd">    for parameter :math:`i` and level :math:`j` of ``factor``.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Nieuwenhuis, R., te Grotenhuis, M., &amp; Pelzer, B. (2012).</span>
+<span class="sd">       influence.ME: tools for detecting influential data in mixed effects models.</span>
+<span class="sd">       R journal, 4(2), 38-47.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get the factor levels</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">epochs</span><span class="o">.</span><span class="n">epoch_id</span><span class="p">,</span> <span class="n">epochs</span><span class="o">.</span><span class="n">time</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">levels</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="n">factor</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="c1"># produce epochs tables with each level left out</span>
+    <span class="n">looo_epochs</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">fitgrid</span><span class="o">.</span><span class="n">epochs_from_dataframe</span><span class="p">(</span>
+            <span class="n">table</span><span class="p">[</span><span class="n">table</span><span class="p">[</span><span class="n">factor</span><span class="p">]</span> <span class="o">!=</span> <span class="n">level</span><span class="p">],</span>
+            <span class="n">time</span><span class="o">=</span><span class="n">epochs</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+            <span class="n">epoch_id</span><span class="o">=</span><span class="n">epochs</span><span class="o">.</span><span class="n">epoch_id</span><span class="p">,</span>
+            <span class="n">channels</span><span class="o">=</span><span class="n">epochs</span><span class="o">.</span><span class="n">channels</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="n">levels</span>
+    <span class="p">)</span>
+
+    <span class="c1"># fit lmer on these epochs</span>
+    <span class="n">fitter</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">fitgrid</span><span class="o">.</span><span class="n">lmer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">grids</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">fitter</span><span class="p">,</span> <span class="n">looo_epochs</span><span class="p">)</span>
+    <span class="n">coefs</span> <span class="o">=</span> <span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">coefs</span> <span class="k">for</span> <span class="n">grid</span> <span class="ow">in</span> <span class="n">grids</span><span class="p">)</span>
+
+    <span class="c1"># get coefficient estimates and se from leave one out fits</span>
+    <span class="n">looo_coefs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="n">levels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">looo_estimates</span> <span class="o">=</span> <span class="n">looo_coefs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">IndexSlice</span><span class="p">[:,</span> <span class="p">:,</span> <span class="s1">&#39;Estimate&#39;</span><span class="p">],</span> <span class="p">:]</span>
+    <span class="n">looo_se</span> <span class="o">=</span> <span class="n">looo_coefs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">IndexSlice</span><span class="p">[:,</span> <span class="p">:,</span> <span class="s1">&#39;SE&#39;</span><span class="p">],</span> <span class="p">:]</span>
+
+    <span class="c1"># get coefficient estimates from regular fit (all levels included)</span>
+    <span class="n">all_levels_coefs</span> <span class="o">=</span> <span class="n">fitgrid</span><span class="o">.</span><span class="n">lmer</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">coefs</span>
+    <span class="n">all_levels_estimates</span> <span class="o">=</span> <span class="n">all_levels_coefs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">IndexSlice</span><span class="p">[:,</span> <span class="p">:,</span> <span class="s1">&#39;Estimate&#39;</span><span class="p">],</span> <span class="p">:</span>
+    <span class="p">]</span>
+
+    <span class="c1"># drop outer level of index for convenience</span>
+    <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="p">(</span><span class="n">looo_estimates</span><span class="p">,</span> <span class="n">looo_se</span><span class="p">,</span> <span class="n">all_levels_estimates</span><span class="p">):</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">droplevel</span><span class="p">(</span><span class="n">level</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># (all_levels_estimate - level_excluded_estimate) / level_excluded_se</span>
+    <span class="n">dfbetas</span> <span class="o">=</span> <span class="n">all_levels_estimates</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">looo_estimates</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">div</span><span class="p">(</span>
+        <span class="n">looo_se</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dfbetas</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
