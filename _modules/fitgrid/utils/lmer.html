@@ -150,6 +150,7 @@
             
   <h1>Source code for fitgrid.utils.lmer</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
@@ -231,8 +232,14 @@
     <span class="n">lmer_coefs</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">save_as</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># filepath, h5 group slashpath</span>
-        <span class="n">coefs</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="n">save_as</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">save_as</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fname</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="n">save_as</span>
+            <span class="n">lmer_coefs</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">fail</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">f</span><span class="s2">&quot;save_as=</span><span class="si">{save_as}</span><span class="s2"> failed: </span><span class="si">{fail}</span><span class="s2">. You can try to &quot;</span>
+                <span class="s2">&quot;save the returned dataframe with pandas.to_hdf()&quot;</span>
+            <span class="p">)</span>
 
     <span class="ne">FutureWarning</span><span class="p">(</span><span class="s1">&#39;lmer_coefs are in early days, subject to change&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">lmer_coefs</span></div>
