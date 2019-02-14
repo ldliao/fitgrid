@@ -717,7 +717,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-100%|██████████| 100/100 [00:01&lt;00:00, 53.88it/s]
+100%|██████████| 100/100 [00:02&lt;00:00, 47.92it/s]
 </pre></div></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">fitgrid.lm</span></code> runs linear regression for each channel, with a single channel data as the left hand side, and the right hand side given by the Patsy/R style formula passed in using the <code class="docutils literal notranslate"><span class="pre">RHS</span></code> parameter:</p>
@@ -748,7 +748,7 @@ div.rendered_html tbody tr:hover {
 <div class="highlight"><pre>
   0%|          | 0/100 [00:00&lt;?, ?it/s]/home/travis/miniconda/envs/fitgrid_compat/lib/python3.6/site-packages/rpy2/robjects/pandas2ri.py:191: FutureWarning: from_items is deprecated. Please use DataFrame.from_dict(dict(items), ...) instead. DataFrame.from_dict(OrderedDict(items)) may be used to preserve the key order.
   res = PandasDataFrame.from_items(items)
-100%|██████████| 100/100 [02:19&lt;00:00,  1.38s/it]
+100%|██████████| 100/100 [02:32&lt;00:00,  1.54s/it]
 </pre></div></div>
 </div>
 <p>With lmer especially, it might be useful to run your model with multiple processes to speed it up. This can be achieved by setting <code class="docutils literal notranslate"><span class="pre">parallel</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">n_cores</span></code> to the desired value (defaults to 4) as follows:</p>
@@ -766,7 +766,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-100%|██████████| 100/100 [00:00&lt;00:00, 285.97it/s]
+100%|██████████| 100/100 [00:00&lt;00:00, 545.55it/s]
 /home/travis/miniconda/envs/fitgrid_compat/lib/python3.6/site-packages/rpy2/robjects/pandas2ri.py:191: FutureWarning: from_items is deprecated. Please use DataFrame.from_dict(dict(items), ...) instead. DataFrame.from_dict(OrderedDict(items)) may be used to preserve the key order.
   res = PandasDataFrame.from_items(items)
 /home/travis/miniconda/envs/fitgrid_compat/lib/python3.6/site-packages/rpy2/robjects/pandas2ri.py:191: FutureWarning: from_items is deprecated. Please use DataFrame.from_dict(dict(items), ...) instead. DataFrame.from_dict(OrderedDict(items)) may be used to preserve the key order.
